@@ -1,14 +1,10 @@
-
-import { CartItem } from "./cart";
-
+import { CartItem } from './cart';
 export type OrderStatus = "pending" | "confirmed" | "preparing" | "delivering" | "completed" | "cancelled";
-
 export type OrderPaymentMethod = "card" | "cash" | "card-courier";
-
 export type OrderDeliveryTime = "asap" | "scheduled";
-
 export interface Order {
   id: string;
+  userId: string;
   customerName: string;
   customerEmail: string;
   customerPhone: string;
@@ -22,7 +18,6 @@ export interface Order {
   deliveryTime?: OrderDeliveryTime;
   scheduledTime?: string;
 }
-
 export interface CreateOrderDto {
   customerName: string;
   customerEmail: string;

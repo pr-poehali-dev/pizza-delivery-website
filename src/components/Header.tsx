@@ -1,9 +1,20 @@
-
 import { Link } from "react-router-dom";
 import { ShoppingCart, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
+import { useCart } from "@/hooks/use-cart";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Header = () => {
+  const { isAuthenticated, user, logout } = useAuth();
+  const { totalItems } = useCart();
+  
   return (
     <header className="sticky top-0 z-50 w-full bg-white border-b shadow-sm">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -24,25 +35,63 @@ const Header = () => {
           <Link to="/contacts" className="text-sm font-medium hover:text-primary">
             Контакты
           </Link>
-          <Link to="/promotions" className="text-sm font-medium hover:text-primary">
-            Акции
-          </Link>
         </nav>
 
         <div className="flex items-center space-x-4">
           <Link to="/cart">
             <Button variant="ghost" size="icon" className="relative">
               <ShoppingCart className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 bg-primary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                0
-              </span>
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-primary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                  {totalItems}
+                </span>
+              )}
             </Button>
           </Link>
-          <Link to="/profile">
-            <Button variant="ghost" size="icon">
-              <User className="h-5 w-5" />
-            </Button>
-          </Link>
+          
+          {isAuthenticated ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full bg-primary/10">
+                  <span className="text-primary font-medium">
+                    {user?.name.charAt(0).toUpperCase()}
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <div className="px-2 py-1.5 text-sm font-medium">{user?.name}</div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/profile">Личный кабинет</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/profile/orders">История заказов</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/profile/addresses">Адреса доставки</Link>
+                </DropdownMenuItem>
+                {user?.role === "admin" && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin/dashboard">Админ панель</Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => logout()}>
+                  Выйти
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link to="/login">
+              <Button variant="ghost" size="icon">
+                <User className="h-5 w-5" />
+              </Button>
+            </Link>
+          )}
+          
           <Button className="hidden md:flex">Заказать</Button>
         </div>
       </div>

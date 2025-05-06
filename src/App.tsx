@@ -12,11 +12,20 @@ import PizzaDetails from "./pages/PizzaDetails";
 import AboutUs from "./pages/AboutUs";
 import Contacts from "./pages/Contacts";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import RequireAuth from "./components/RequireAuth";
+
+// Личный кабинет
+import Profile from "./pages/profile/Profile";
+import OrderHistory from "./pages/profile/OrderHistory";
+import Addresses from "./pages/profile/Addresses";
 
 // Админ панель
 import AdminLogin from "./pages/admin/Login";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminPizzaList from "./pages/admin/PizzaList";
+import AdminPizzaForm from "./pages/admin/PizzaForm";
 
 const queryClient = new QueryClient();
 
@@ -36,13 +45,50 @@ const App = () => (
               <Route path="/pizza/:id" element={<PizzaDetails />} />
               <Route path="/about" element={<AboutUs />} />
               <Route path="/contacts" element={<Contacts />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
               
-              {/* Административная часть */}
+              {/* Личный кабинет (защищенные маршруты) */}
+              <Route path="/profile" element={
+                <RequireAuth>
+                  <Profile />
+                </RequireAuth>
+              } />
+              <Route path="/profile/orders" element={
+                <RequireAuth>
+                  <OrderHistory />
+                </RequireAuth>
+              } />
+              <Route path="/profile/addresses" element={
+                <RequireAuth>
+                  <Addresses />
+                </RequireAuth>
+              } />
+              
+              {/* Административная часть (защищенные маршруты) */}
               <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/admin/dashboard" element={<AdminDashboard />} />
-              <Route path="/admin/pizzas" element={<AdminPizzaList />} />
+              <Route path="/admin/dashboard" element={
+                <RequireAuth allowedRoles={["admin"]}>
+                  <AdminDashboard />
+                </RequireAuth>
+              } />
+              <Route path="/admin/pizzas" element={
+                <RequireAuth allowedRoles={["admin"]}>
+                  <AdminPizzaList />
+                </RequireAuth>
+              } />
+              <Route path="/admin/pizzas/new" element={
+                <RequireAuth allowedRoles={["admin"]}>
+                  <AdminPizzaForm />
+                </RequireAuth>
+              } />
+              <Route path="/admin/pizzas/:id/edit" element={
+                <RequireAuth allowedRoles={["admin"]}>
+                  <AdminPizzaForm />
+                </RequireAuth>
+              } />
               
-              {/* Редирект с /admin на /admin/dashboard */}
+              {/* Редиректы */}
               <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
               
               {/* 404 страница */}

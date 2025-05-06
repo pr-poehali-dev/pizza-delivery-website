@@ -1,12 +1,6 @@
-
 import { createContext, useContext, useState, useEffect } from "react";
 import { authApi } from "@/api/client";
-
-interface User {
-  id: string;
-  email: string;
-  role: string;
-}
+import { User } from "@/types/user";
 
 interface AuthContextType {
   user: User | null;
@@ -16,6 +10,7 @@ interface AuthContextType {
   isLoading: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -27,7 +22,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Загрузка данных аутентификации при инициализации
   useEffect(() => {
     const storedToken = localStorage.getItem("auth_token");
     const storedUser = localStorage.getItem("auth_user");
@@ -40,7 +34,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoading(false);
   }, []);
 
-  // Функция входа
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     setError(null);
@@ -51,7 +44,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setToken(response.token);
       setUser(response.user);
       
-      // Сохранение в localStorage
       localStorage.setItem("auth_token", response.token);
       localStorage.setItem("auth_user", JSON.stringify(response.user));
     } catch (err) {
@@ -62,7 +54,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // Функция выхода
+  const register = async (email: string, password: string, name: string) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const response = await authApi.register(email, password, name);
+      
+      setToken(response.token);
+      setUser(response.user);
+      
+      localStorage.setItem("auth_token", response.token);
+      localStorage.setItem("auth_user", JSON.stringify(response.user));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Произошла ошибка при регистрации");
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = async () => {
     setIsLoading(true);
     
@@ -71,7 +82,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (err) {
       console.error("Ошибка при выходе:", err);
     } finally {
-      // Очистка данных аутентификации
       setToken(null);
       setUser(null);
       localStorage.removeItem("auth_token");
@@ -88,6 +98,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     isLoading,
     error,
     login,
+    register,
     logout
   };
 
@@ -101,3 +112,4 @@ export const useAuth = () => {
   }
   return context;
 };
+}
