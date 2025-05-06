@@ -7,6 +7,7 @@ import { CartProvider } from "@/hooks/use-cart";
 import Index from "./pages/Index";
 import Menu from "./pages/Menu";
 import Cart from "./pages/Cart";
+import PizzaDetails from "./pages/PizzaDetails";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/menu" element={<Menu />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/pizza/:id" element={<PizzaDetails />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

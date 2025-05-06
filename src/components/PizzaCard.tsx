@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState } from "react");
 import { Link } from "react-router-dom";
 import { Plus, Minus, ShoppingCart } from "lucide-react";
 import { 
@@ -63,11 +62,13 @@ const PizzaCard = ({ pizza }: PizzaCardProps) => {
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md">
       <div className="relative h-48 overflow-hidden">
-        <img 
-          src={pizza.image} 
-          alt={pizza.name} 
-          className="w-full h-full object-cover transition-transform hover:scale-105"
-        />
+        <Link to={`/pizza/${pizza.id}`}> 
+          <img 
+            src={pizza.image} 
+            alt={pizza.name} 
+            className="w-full h-full object-cover transition-transform hover:scale-105"
+          />
+        </Link>
         {pizza.isNew && (
           <Badge className="absolute top-3 right-3 bg-green-500">Новинка</Badge>
         )}
